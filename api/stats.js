@@ -14,6 +14,7 @@ export default async function handler(req, res) {
     );
 
   try {
+    await query(`SET home_directory='/tmp';`);
     await query(`INSTALL httpfs; LOAD httpfs;`);
     const base = `FROM read_parquet('${PARQUET_URL}')`;
 
