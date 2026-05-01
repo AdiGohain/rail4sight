@@ -49,6 +49,7 @@ Your role: identify underperforming lines and stations, diagnose disruption patt
     );
 
     const data = await response.json();
+    console.log("Gemini response:", JSON.stringify(data));
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
     res.json({ reply });
 
