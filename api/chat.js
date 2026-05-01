@@ -1,8 +1,14 @@
+
 export default async function handler(req, res) {
   if (req.method !== "POST") return res.status(405).end();
   res.setHeader("Access-Control-Allow-Origin", "*");
 
-  const { messages, stats } = req.body;
+  // Parse body if it's a string (Vercel sometimes doesn't auto-parse)
+  const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+  const { messages, stats } = body || {};
+  
+  console.log("Request body received:", JSON.stringify({ messages: messages?.length, stats: !!stats }));
+  
   if (!messages || !stats) return res.status(400).json({ error: "Missing messages or stats" });
 
   const systemPrompt = `You are Rail4Sight, an AI network planning assistant for transport authorities.
@@ -49,8 +55,7 @@ Your role: identify underperforming lines and stations, diagnose disruption patt
     );
 
     const data = await response.json();
-    console.log("Gemini full response:", JSON.stringify(data));
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || data.error?.message || "No response received.";
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
     res.json({ reply });
 
   } catch (err) {
