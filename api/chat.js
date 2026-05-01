@@ -35,11 +35,6 @@ Disruption causes: ${stats.causeList?.map(c => `${c.cause} ${c.pct}%`).join(", "
 Your role: identify underperforming lines and stations, diagnose disruption patterns, recommend capacity or operational interventions, and produce briefing-ready insights. Be concise and precise. Respond in 2-4 short paragraphs max.`;
 
   try {
-    const geminiMessages = messages.map(m => ({
-      role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }]
-    }));
-
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
       {
@@ -55,10 +50,10 @@ Your role: identify underperforming lines and stations, diagnose disruption patt
 
     const data = await response.json();
     const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response received.";
-    res.json({ reply, debug: data });
+    res.json({ reply });
 
   } catch (err) {
     console.error("chat error:", err);
     res.status(500).json({ error: err.message });
   }
-}// force redeploy
+}
